@@ -1,4 +1,4 @@
 #include<stdlib>
 #include<iostream>
 int main()
-{std::cout << "hello github" << endl;}
+{std::cout << "hello github! test of SSH" << endl;}
