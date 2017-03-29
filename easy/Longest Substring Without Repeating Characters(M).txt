@@ -1,0 +1,58 @@
+/*Given a string, find the length of the longest substring without repeating characters.
+Examples:
+Given "abcabcbb", the answer is "abc", which the length is 3.
+Given "bbbbb", the answer is "b", with the length of 1.
+Given "pwwkew", the answer is "wke", with the length of 3. Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+Subscribe to see which companies asked this question.
+Show Tags
+Show Similar Problems
+"abcabcbb"
+"bbbabc"
+note:
+Firstly, i'm wrong about assuming the characters is only 'a-zA-Z'. But there are characters such as '{' or '-' or more.
+Only need change CHARACTERS_NUMBER and getCharPosition() function.
+Algorithm is right;
+*/
+
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+		const int CHARACTERS_NUMBER = 256;
+        bool is_exist[CHARACTERS_NUMBER];
+		memset(is_exist, 0, CHARACTERS_NUMBER);
+		int length = s.length();
+		int max_result = 0;
+		int start = 0;
+		int end = start;
+		while(end < length && max_result < CHARACTERS_NUMBER)
+		{
+			char end_char = s[end];
+			int end_value_position = getCharPosition(end_char);
+			if (is_exist[end_value_position])
+			{
+				while (s[start] != end_char)
+				{
+					int start_position = getCharPosition(s[start]);
+					is_exist[start_position] = false;
+					start++;
+				}
+				start++;
+			}
+			else
+			{
+				is_exist[end_value_position] = true;
+				int current_max = end-start+1;
+				if(current_max > max_result)
+				{
+					max_result = current_max;
+				}
+			}
+			end++;
+		}
+		return max_result;
+    }
+	int getCharPosition(const char input_char)
+	{
+		return static_cast<int>(input_char);
+	}
+};
