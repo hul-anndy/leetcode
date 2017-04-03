@@ -9,7 +9,7 @@ Write the code that will take a string and make this conversion given a number o
 string convert(string text, int nRows);
 convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".
 */
-//simple
+/*//simple
 class Solution {
 public:
     string convert(string s, int numRows) {
@@ -46,4 +46,52 @@ public:
 	}
 	return result;
     }
+};*/
+
+//try to speed up
+class Solution {
+public:
+    string convert(string s, int numRows) {
+	string result;
+	m_nTotalRow = numRows;
+        int length = s.length();
+        int m_nZigRow = numRows>2?numRows-2 : 0;
+	int m_nCircle = numRows+m_nZigRow;
+
+	for(int i = 0;i<numRows; ++i)
+	{
+		int base_index = i;
+		int zig_index = (i==0||i==numRows-1)?-1:numRows-1 + (m_nZigRow-i+1);
+		while (base_index < length)
+		{
+			result+=s[base_index];
+			base_index += m_nCircle;
+			if(zig_index!=-1 && zig_index < length)
+			{
+				result += s[zig_index];
+				zig_index+=m_nCircle;
+			}
+		}
+	}
+	return result;
+    }
+    bool isZig(const int index, const int row)
+    {
+	bool result = false;
+	if(row > 0 && row < m_nTotalRow-1)
+	{
+		int zig_number = index % m_nCircle;
+		if (zig_number >= m_nTotalRow)
+		{
+			zig_number = zig_number - m_nTotalRow +1;
+			int zig_row= m_nTotalRow-2-zig_number+1;
+			result = zig_row == row;
+		}
+	}
+	return result;
+    }
+   private:
+   int m_nTotalRow;
+   int m_nZigRow;
+   int m_nCircle;
 };
