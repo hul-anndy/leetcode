@@ -46,6 +46,7 @@ public:
 };
 */
 
+/*//dynamic program
 class Solution {
 public:
     string longestPalindrome(string s) {
@@ -90,4 +91,48 @@ public:
 		result = s.substr(max_start,max_palindromic);
 		return result;
     }
+};*/
+class Solution {
+public:
+    string longestPalindrome(string s) {
+	string result;
+        int max_palindromic = 0;
+		int max_start = 0;
+		
+		int length = s.length();
+		if (length != 0)
+			{
+				max_palindromic = 1;
+			}
+		for (int i=0; i < length; ++i)
+		{
+			int spread_length_single = spread(s,i,i);
+			int spread_length_double = spread(s,i,i+1);
+			int spread_max = max(spread_length_single,spread_length_double);
+			if (spread_max > max_palindromic)
+			{
+				max_palindromic = spread_max;
+				max_start = i-((max_palindromic+1)/2-1);
+			}
+			
+		}
+		result = s.substr(max_start,max_palindromic);
+		return result;
+    }
+	int max(const int first, const int second)
+	{
+		return first > second ?first:second;
+	}
+	int spread(const string s, int start, int end)
+	{
+		int length = s.length();
+		
+		while (start >= 0 && end < length && s[start] == s[end])
+		{
+			--start;
+			++end;
+		}
+		int result = end-start+1-2;
+		return result;
+	}
 };
