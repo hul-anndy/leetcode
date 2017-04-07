@@ -1,0 +1,85 @@
+/*
+'.' Matches any single character.
+'*' Matches zero or more of the preceding element.
+
+The matching should cover the entire input string (not partial).
+
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+
+Some examples:
+isMatch("aa","a") ¡ú false
+isMatch("aa","aa") ¡ú true
+isMatch("aaa","aa") ¡ú false
+isMatch("aa", "a*") ¡ú true
+isMatch("aa", ".*") ¡ú true
+isMatch("ab", ".*") ¡ú true
+isMatch("aab", "c*a*b") ¡ú true
+"a-aa"
+"ab*a*c*a"
+
+"ab"
+".*.."
+*/
+
+//O(mn)
+class Solution {
+public:
+    bool isMatch(string s, string p)
+	{
+		bool result = isStringMatched(s,p,0,0);
+		return result;
+    }
+	bool isStringMatched(const string& s, const string& p, int s_start, int p_start)
+	{
+		int s_length = s.length();
+		int p_length = p.length();
+		if (s_length == s_start)
+		{
+			while (p_start< p_length)
+			{
+				if (p[p_start+1]=='*')
+				{
+					p_start +=2;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			if (p_start >= p_length)
+			{
+			return true;
+			}
+		}
+
+		if (s_start < s_length && p_start == p_length)
+			return false;
+		
+		
+		bool result = false;
+		if(s_start<s_length && p_start < p_length)
+		{
+			if (p_start+1<p_length && p[p_start+1] == '*')
+			{
+				if (isStringMatched(s,p,s_start,p_start+2))
+				{
+					result= true;
+				}
+				else if (s_start<s_length && isCharMatched(s[s_start],p[p_start]))
+				{
+					result = isStringMatched(s,p,s_start+1,p_start);
+				}
+			}
+			else if (isCharMatched(s[s_start],p[p_start]))
+			{
+				result=isStringMatched(s,p,s_start+1,p_start+1);
+			}
+		}
+		return result;
+	}
+	bool isCharMatched(const char first, const char second)
+	{
+		return first == '.' || second == '.' || first == second;
+	}
+};
