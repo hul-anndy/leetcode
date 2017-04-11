@@ -11,7 +11,7 @@ public:
 		const vector<string> THOUSAND = {"","M","MM","MMM"};
         const vector<string> HUNDRED = {"","C","CC","CCC","CD","D","DC","DCC","DCCC","CM"};
 		const vector<string> DECADE = {"","X","XX","XXX","XL","L","LX","LXX","LXXX","XC"};
-		const vector<string> UNIT= {"","I","II","III","IV","V","VI","VII","VIII","VX"};
+		const vector<string> UNIT= {"","I","II","III","IV","V","VI","VII","VIII","IX"};
 		string result;
 		result += THOUSAND[num/THOUSAND_BASE];
 		num %= THOUSAND_BASE;
