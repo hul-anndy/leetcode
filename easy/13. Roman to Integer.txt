@@ -1,0 +1,63 @@
+/*Given a roman numeral, convert it to an integer.
+Input is guaranteed to be within the range from 1 to 3999.
+DCXXI
+Damn! use vs find a mistake.
+*/
+
+class Solution {
+public:
+	const int INT_ERROR_RESULT = -1;
+	const int MAX_SINGLE_LENGTH = 4;
+	string m_string;
+	int m_nLength;
+    int romanToInt(string s) {
+	m_string = s;
+	m_nLength = s.length();
+        const int THOUSAND_BASE = 1000;
+		const int HUNDRED_BASE = 100;
+		const int DECADE_BASE = 10;
+		const vector<string> THOUSAND = {"","M","MM","MMM"};
+        const vector<string> HUNDRED = {"","C","CC","CCC","CD","D","DC","DCC","DCCC","CM"};
+		const vector<string> DECADE = {"","X","XX","XXX","XL","L","LX","LXX","LXXX","XC"};
+		const vector<string> UNIT= {"","I","II","III","IV","V","VI","VII","VIII","IX"};
+		int result = 0;
+		int first_number = INT_ERROR_RESULT;
+		first_number = getFirstNumber(THOUSAND);
+		if (first_number != INT_ERROR_RESULT)
+			result+=first_number*THOUSAND_BASE;
+			
+		first_number = getFirstNumber(HUNDRED);
+		if (first_number != INT_ERROR_RESULT)
+			result+=first_number*HUNDRED_BASE;
+			
+		first_number = getFirstNumber(DECADE);
+		if (first_number != INT_ERROR_RESULT)
+			result+=first_number*DECADE_BASE;
+			
+		first_number = getFirstNumber(UNIT);
+		if (first_number != INT_ERROR_RESULT)
+			result+=first_number;
+		return result;
+    }
+	int getFirstNumber(const vector<string>& vec)
+	{
+		int result = INT_ERROR_RESULT;
+		string s_temp;
+		int length_temp;
+		for (int i = vec.size()-1; i > 0; --i)
+		{
+			length_temp = vec[i].length();
+			if (length_temp > m_nLength)
+				continue;
+			s_temp = m_string.substr(0,length_temp);
+			if (s_temp.compare(vec[i]) == 0)
+			{
+				m_string = m_string.substr(length_temp,m_nLength-length_temp);
+				m_nLength = m_string.length();
+				result = i;
+				break;
+			}
+		}
+		return result;
+	}
+};
