@@ -1,0 +1,51 @@
+/*
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+*/
+
+class Solution {
+public:
+    bool isValid(string s) {
+        bool b_result = true;
+		std::stack<char> char_stack;
+		std::map<char,char> bracket_map;
+		bracket_map.insert(std::pair<char,char>('(',')'));
+		bracket_map.insert(std::pair<char,char>('[',']'));
+		bracket_map.insert(std::pair<char,char>('{','}'));
+		for (int i = 0; i < s.length(); ++i)
+		{
+			if(isLeftBracket(s[i]))
+			{
+				char_stack.push(s[i]);
+			}
+			else if (isRightBracket(s[i]))
+			{
+				if (char_stack.empty())
+				{
+					b_result = false;
+					break;
+				}
+				else if (bracket_map[char_stack.top()] == s[i])
+				{
+					char_stack.pop();
+				}
+				else
+				{
+					b_result = false;
+					break;
+				}
+			}
+		}
+		if (b_result)
+			b_result = char_stack.empty();
+		return b_result;
+    }
+	bool isLeftBracket(const char input_char)
+	{
+		return input_char == '(' ||input_char == '[' ||input_char == '{';
+	}
+	bool isRightBracket(const char input_char)
+	{
+		return input_char == ')' ||input_char == ']' ||input_char == '}';
+	}
+};
