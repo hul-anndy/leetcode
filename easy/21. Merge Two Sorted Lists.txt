@@ -1,0 +1,90 @@
+/*
+Merge two sorted linked lists and return it as a new list. The new list should be made by splicing together the nodes of the first two lists.
+*/
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* p_result_head = NULL;
+		ListNode* p_result_current=NULL;
+		ListNode* p_l1 = l1;
+		ListNode* p_l2 = l2;
+		while (p_l1 || p_l2)
+		{
+			/*if (!p_l1)
+			{
+				p_result_head = insertList(p_result_head,p_result_current,new ListNode(p_l2->val));
+				p_result_current = p_result_current ? p_result_current->next : p_result_head;
+				p_l2 = p_l2->next;
+			}
+			else if (!p_l2)
+			{
+				p_result_head = insertList(p_result_head,p_result_current,new ListNode(p_l1->val));
+				p_result_current = p_result_current ? p_result_current->next : p_result_head;
+				p_l1 = p_l1->next;
+			}
+			else
+			{
+				if (p_l1->val < p_l2->val)
+				{
+					p_result_head = insertList(p_result_head,p_result_current,new ListNode(p_l1->val));
+					p_result_current = p_result_current ? p_result_current->next : p_result_head;
+					p_l1 = p_l1->next;
+				}
+				else
+				{
+					p_result_head = insertList(p_result_head,p_result_current,new ListNode(p_l2->val));
+					p_result_current = p_result_current ? p_result_current->next : p_result_head;
+					p_l2 = p_l2->next;
+				}
+			}*/
+			if (!p_l1)
+			{
+				insertNode(&p_result_head,&p_result_current,&p_l2);
+			}
+			else if (!p_l2)
+			{
+				insertNode(&p_result_head,&p_result_current,&p_l1);
+			}
+			else
+			{
+				if (p_l1->val < p_l2->val)
+				{
+					insertNode(&p_result_head,&p_result_current,&p_l1);
+				}
+				else
+				{
+					insertNode(&p_result_head,&p_result_current,&p_l2);
+				}
+			}
+		}
+		return p_result_head;
+    }
+	void insertNode(ListNode** p_head, ListNode** p_target,ListNode** p_node)
+	{
+		*p_head = insertList(*p_head,*p_target,new ListNode((*p_node)->val));
+		*p_target = *p_target ? (*p_target)->next : *p_head;
+		*p_node = (*p_node)->next;
+	}
+	ListNode* insertList(ListNode* p_head, ListNode* p_target, ListNode* p_insert_data)
+	{
+		ListNode* p_new_head = p_head;
+		if (!p_target)
+		{
+			p_head = p_insert_data;
+		}
+		else
+		{
+			p_insert_data->next = p_target->next;
+			p_target->next = p_insert_data;
+		}
+		return p_head;
+	}
+};
