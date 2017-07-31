@@ -1,0 +1,51 @@
+/*
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+For example, given n = 3, a solution set is:
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+*/
+
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        vector<string> result;
+		string empty_string;
+		int stack_size = 0;
+		dfsAll(empty_string,0,0,n,result);
+		return result;
+    }
+	void dfsAll(const string pre_str, int left_count, int right_count, int n, vector<string>& result)
+	{
+		if (left_count == n && right_count == n)
+		{
+			result.push_back(pre_str);
+			return;
+		}
+		string new_string = pre_str;
+		if(right_count < left_count)
+		{
+			new_string.push_back(')'); 
+			dfsAll(new_string,left_count,right_count+1,n,result);
+		}
+		new_string = pre_str;
+		if(left_count < n)
+		{
+			new_string.push_back('(');
+			dfsAll(new_string,left_count+1,right_count,n,result);
+		}
+	}
+	string getContinuousChar(const int number, const char continuous_char)
+	{
+		string result;
+		for(int i = 0; i < number ; ++i)
+		{
+			result.push_back(continuous_char);
+		}
+		return result;
+	}
+};
