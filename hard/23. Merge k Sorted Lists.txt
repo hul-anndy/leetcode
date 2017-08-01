@@ -1,0 +1,113 @@
+/*
+Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+*/
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+ 
+struct heapNode{
+int value;
+int listIndex;
+heapNode(int v,int i):value(v),listIndex(i){}
+};
+ 
+class minHeap{
+public:
+	void up(const int index)
+	{
+		int parent_index = getParentIndex(index);
+		if(index != parent_index && m_vecHeap[index] > m_vecHeap[parent_index])
+		{
+			m_vecHeap.swap(index,parent_index);
+			up(parent_index);
+		}
+	}
+	void down(const int index)
+	{
+		int left_son_index = getLeftSonIndex(index);
+		int right_son_index = getRightSonIndex(index);
+		if(index != left_son_index &&left_son_index<m_vecHeap.size()&& m_vecHeap[index] > m_vecHeap[parent_index])
+		{
+			m_vecHeap.swap(index,parent_index);
+			up(parent_index);
+		}
+	}
+	void insert(const int value)
+	{
+	}
+	int getTop()
+	{
+	
+	}
+private:
+int getLeftSonIndex(const int parent_index)
+{
+	return parent_index*2+1;
+}
+int getRightSonIndex(const int parent_index)
+{
+return parent_index*2+2;
+}
+int getParentIndex(const int son_index)
+{
+return (son_index-1)/2;
+}
+
+private:
+	std::vector<heapNode> m_vecHeap;
+}
+ 
+class Solution {
+public:
+	//run time complexity is O(k*Sum(l))
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        ListNode* result = nullptr;
+		ListNode* result_head = result;
+		vector<ListNode*> head_lists = lists;
+		int min_index,min_value;
+		int end_number = 0;
+		while(end_number < head_lists.size())
+		{
+			min_value=INT_MAX;
+			min_index = -1;
+			end_number = 0;
+			for (int i =0; i < head_lists.size(); ++i)
+			{
+				if(head_lists[i])
+				{
+					if (head_lists[i]->val < min_value)
+					{
+						min_value = head_lists[i]->val;
+						min_index = i;
+					}
+				}
+				else
+				{
+					end_number++;
+				}
+			}
+			if(min_index != -1)
+			{
+				ListNode* new_node = new ListNode(min_value);
+				if(result)
+				{
+					result->next = new_node;
+					result = new_node;
+				}
+				else
+				{
+					result = new_node;
+					result_head = result;
+				}
+				head_lists[min_index] = head_lists[min_index]->next;
+			}
+		}
+		return result_head;
+    }
+};
