@@ -1,5 +1,12 @@
 /*
 Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+Input:
+[[-1,1],[-3,1,4],[-2,-1,0,2]]
+Output:
+[-3,-2,-1,0,1,2,4,-1,1]
+Expected:
+[-3,-2,-1,-1,0,1,1,2,4]
+
 */
 
 /**
@@ -10,21 +17,22 @@ Merge k sorted linked lists and return it as one sorted list. Analyze and descri
  *     ListNode(int x) : val(x), next(NULL) {}
  * };
  */
- 
-struct heapNode{
-int value;
-int listIndex;
-heapNode(int v,int i):value(v),listIndex(i){}
+
+struct HeapNode {
+	int value;
+	int listIndex;
+	HeapNode(int v, int i) :value(v), listIndex(i) {}
 };
- 
-class minHeap{
+#define min(a,b) (a)<(b)?(a):(b)
+//About min-heap: need pay attention to a case which left-son is equal to right-son node.
+class MinHeap {
 public:
 	void up(const int index)
 	{
 		int parent_index = getParentIndex(index);
-		if(index != parent_index && m_vecHeap[index] > m_vecHeap[parent_index])
+		if (index != parent_index && value(index) < value(parent_index))
 		{
-			m_vecHeap.swap(index,parent_index);
+			swapIndex(index, parent_index);
 			up(parent_index);
 		}
 	}
@@ -32,40 +40,90 @@ public:
 	{
 		int left_son_index = getLeftSonIndex(index);
 		int right_son_index = getRightSonIndex(index);
-		if(index != left_son_index &&left_son_index<m_vecHeap.size()&& m_vecHeap[index] > m_vecHeap[parent_index])
+		int min_index = index;
+		if (left_son_index < m_vecHeap.size() && value(left_son_index) < value(index)
+			&& value(left_son_index) < value(right_son_index))
 		{
-			m_vecHeap.swap(index,parent_index);
-			up(parent_index);
+			min_index = left_son_index;
+		}
+		else if (right_son_index < m_vecHeap.size() && value(right_son_index) < value(index)
+			&& value(right_son_index) <= value(left_son_index))
+		{
+			min_index = right_son_index;
+		}
+		if (min_index != index)
+		{
+			swapIndex(index, min_index);
+			down(min_index);
 		}
 	}
-	void insert(const int value)
+	void insert(const HeapNode node)
 	{
+		m_vecHeap.push_back(node);
+		up(m_vecHeap.size() - 1);
 	}
-	int getTop()
+	HeapNode top()
 	{
-	
+		return m_vecHeap.empty() ? HeapNode(INT_MAX, -1) : m_vecHeap[0];
 	}
+	void resetTop(const HeapNode node)
+	{
+		if (!m_vecHeap.empty())
+		{
+			m_vecHeap[0] = node;
+			down(0);
+		}
+	}
+	void removeTop()
+	{
+		if (!m_vecHeap.empty())
+		{
+			m_vecHeap[0] = m_vecHeap[m_vecHeap.size() - 1];
+			m_vecHeap.pop_back();
+			down(0);
+		}
+	}
+	bool empty() { return m_vecHeap.empty(); };
 private:
-int getLeftSonIndex(const int parent_index)
-{
-	return parent_index*2+1;
-}
-int getRightSonIndex(const int parent_index)
-{
-return parent_index*2+2;
-}
-int getParentIndex(const int son_index)
-{
-return (son_index-1)/2;
-}
+	int value(const int index)
+	{
+		int result = INT_MAX;
+		if (index >= 0 && index < m_vecHeap.size())
+		{
+			result = m_vecHeap[index].value;
+		}
+		return result;
+	}
+	void swapIndex(const int index_first, const int index_sencond)
+	{
+		if (index_first >= 0 && index_first < m_vecHeap.size()
+			&& index_sencond >= 0 && index_sencond < m_vecHeap.size())
+		{
+			HeapNode tempNode = m_vecHeap[index_first];
+			m_vecHeap[index_first] = m_vecHeap[index_sencond];
+			m_vecHeap[index_sencond] = tempNode;
+		}
+	}
+	int getLeftSonIndex(const int parent_index)
+	{
+		return parent_index * 2 + 1;
+	}
+	int getRightSonIndex(const int parent_index)
+	{
+		return parent_index * 2 + 2;
+	}
+	int getParentIndex(const int son_index)
+	{
+		return son_index == 0 ? 0 : (son_index - 1) / 2;
+	}
 
 private:
-	std::vector<heapNode> m_vecHeap;
-}
+	std::vector<HeapNode> m_vecHeap;
+};
  
 class Solution {
 public:
-	//run time complexity is O(k*Sum(l))
+	/*//run time complexity is O(k*Sum(l))
     ListNode* mergeKLists(vector<ListNode*>& lists) {
         ListNode* result = nullptr;
 		ListNode* result_head = result;
@@ -108,6 +166,60 @@ public:
 				head_lists[min_index] = head_lists[min_index]->next;
 			}
 		}
+		return result_head;
+    }*/
+	/*
+	Input:
+[[1,2,2],[1,1,2]]
+Output:
+[1,2,2,1,1,2]
+Expected:
+[1,1,1,2,2,2]
+	*/
+	
+	//Run time complexity is O(Log(k)*Sum(l))
+	ListNode* mergeKLists(vector<ListNode*>& lists) {
+        ListNode* result = nullptr;
+		ListNode* result_head = result;
+		vector<ListNode*> head_lists = lists;
+		MinHeap min_heap;
+		for(int i = 0; i < head_lists.size(); ++i)
+		{
+			if(head_lists[i])
+			{
+				min_heap.insert(HeapNode(head_lists[i]->val,i));
+			}	
+		}
+		while(!min_heap.empty())
+		{
+			HeapNode top_node = min_heap.top();
+			
+
+			ListNode* new_node = new ListNode(top_node.value);
+				
+			if(result)
+			{
+				result->next = new_node;
+				result = new_node;
+			}
+			else
+			{
+				result = new_node;
+				result_head = result;
+			}
+			head_lists[top_node.listIndex] = head_lists[top_node.listIndex]->next;
+			
+			if (head_lists[top_node.listIndex])
+			{
+				top_node.value = head_lists[top_node.listIndex]->val;
+				min_heap.resetTop(top_node);
+			}
+			else
+			{
+				min_heap.removeTop();
+			}
+		}
+		
 		return result_head;
     }
 };
