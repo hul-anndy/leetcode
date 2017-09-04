@@ -1,0 +1,16 @@
+/*
+Implement strStr().
+Returns the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+*/
+
+class Solution {
+public:
+    int strStr(string haystack, string needle) {
+        int result = haystack.find(needle);
+		if(result == std::npos)
+		{
+			result = -1;
+		}
+		return result;
+    }
+};
