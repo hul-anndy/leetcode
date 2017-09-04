@@ -1,0 +1,159 @@
+/*
+Divide two integers without using multiplication, division and mod operator.
+If it is overflow, return MAX_INT.
+*/
+
+class Solution {
+public:
+//time out
+    /*int divide(int dividend, int divisor) {
+        int result = 0;
+		if(divisor != 0)
+		{
+			if (divisor == INT_MIN)
+			{
+				result = dividend == INT_MIN ? 1:0;
+			}
+			else{
+				bool is_different_signal = false;
+				if (dividend > 0)
+				{
+					if (divisor < 0)
+					{
+					is_different_signal = true;
+					divisor = -divisor;
+					}
+						
+					int temp_value = divisor;
+					while (temp_value <= dividend)
+					{
+						temp_value += divisor;
+						if(result < INT_MAX)
+							result++;
+						else{
+							result = INT_MAX;
+							break;
+						}	
+					}
+				}
+				else {
+					if (divisor > 0)
+					{
+					is_different_signal = true;
+					divisor = -divisor;
+					}
+
+					int temp_value = divisor;
+					while (temp_value >= dividend)
+					{
+						temp_value += divisor;
+						if(result < INT_MAX)
+							result++;
+						else{
+							result = INT_MAX;
+							break;
+						}	
+					}
+				}
+				if (is_different_signal)
+					result = -result;
+			}
+			
+		}
+		else
+		{
+			result = INT_MAX;
+		}
+		return result;
+    }*/
+	 int divide(int dividend, int divisor) {
+        int result = 0;
+		if(divisor != 0)
+		{
+			if (divisor == INT_MIN)
+			{
+				result = dividend == INT_MIN ? 1:0;
+			}
+			else{
+				bool is_different_signal = false;
+				if (dividend > 0)
+				{
+					if (divisor < 0)
+					{
+					is_different_signal = true;
+					divisor = -divisor;
+					}
+					while (dividend >= divisor)
+					{
+						int temp_value = divisor;
+						int count_left = 0;
+						while (temp_value <= dividend)
+						{
+							int new_temp = temp_value << 1;
+							if (new_temp < dividend && new_temp > 0)
+							{
+								temp_value = new_temp;
+								count_left++;
+							}
+							else
+							{
+								break;
+							}
+						}
+						if(temp_value <= dividend)
+						{
+							dividend -= temp_value;
+							int times = pow(2,count_left);
+							result+=times;
+						}
+					}
+					
+				}
+				else {
+					if (divisor > 0)
+					{
+					is_different_signal = true;
+					divisor = -divisor;
+					}
+					while (dividend <= divisor)
+					{
+						int temp_value = divisor;
+						int count_left = 0;
+						while (temp_value > dividend)
+						{
+							int new_temp = temp_value << 1;
+							if (new_temp > dividend && new_temp <0)
+							{
+								temp_value = new_temp;
+								count_left++;
+							}
+							else
+							{
+								break;
+							}
+						}
+						if (temp_value >= dividend)
+						{
+							dividend -= temp_value;
+							int times = pow(2, count_left);
+							if (!is_different_signal && INT_MAX - times < result)
+							{
+								result = INT_MAX;
+								break;
+							}
+							result += times;
+						}
+					}
+				}
+				if (is_different_signal)
+					result = -result;
+			}
+			
+		}
+		else
+		{
+			result = INT_MAX;
+		}
+		return result;
+    }
+};
