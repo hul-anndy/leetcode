@@ -1,0 +1,128 @@
+/*
+You are given a string, s, and a list of words, words, that are all of the same length. Find all starting indices of substring(s) in s that is a concatenation of each word in words exactly once and without any intervening characters.
+For example, given:
+s: "barfoothefoobarman"
+words: ["foo", "bar"]
+You should return the indices: [0,9].
+
+"wordgoodgoodgoodbestword"
+["word","good","best","good"]
+[8]
+(order does not matter).
+*/
+
+
+class Solution {
+public:
+/*//time complexity O(n*k*l)
+    vector<int> findSubstring(string s, vector<string>& words) {
+        vector<int> result;
+		if (!s.empty() && !words.empty())
+		{
+			int step = words[0].size();
+			bool is_word_employed[words.size()];
+			int words_length = words[0].size()*words.size();
+			int max_index_s = s.size()-words_length;
+			for (int index_s=0; index_s <= max_index_s; ++index_s)
+			{
+				memset(is_word_employed,0,words.size());
+				int current_index = index_s;
+				int find_words = 0;
+				while (find_words != -1 && current_index < index_s+words_length)
+				{
+					find_words = findWords(s,current_index,words,is_word_employed);
+					if (find_words != -1)
+					{
+						current_index += step;
+						is_word_employed[find_words] = true;
+					}
+					else
+					{
+						break;
+					}
+				}
+				if (find_words != -1)
+				{
+					result.push_back(index_s);
+				}
+			}
+		}
+		
+		return result;
+    }
+	int findWords(string& s, int index_s, vector<string>& words, bool* is_word_employed)
+	{
+		int result = -1;
+		if (!s.empty() && !words.empty())
+		{
+			string sub_s = s.substr(index_s,words[0].size());
+			for (int i = 0; i < words.size(); ++i)
+			{
+				if (sub_s.compare(words[i]) == 0 && !is_word_employed[i])
+				{
+					result = i;
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+	*/
+	//use unordered_map, time complexity O(n*k)
+	vector<int> findSubstring(string s, vector<string>& words) {
+        vector<int> result;
+		unordered_map<string,int> word_count;
+		for (string word : words)
+		{
+			word_count[word]++;
+		}
+		if (!s.empty() && !words.empty())
+		{
+			int step = words[0].size();
+			int words_length = words[0].size()*words.size();
+			int max_index_s = s.size()-words_length;
+			for (int index_s=0; index_s <= max_index_s; ++index_s)
+			{
+				unordered_map<string,int> temp_word_count;
+				int current_index = index_s;
+				bool find_words = true;
+				while (find_words && current_index < index_s+words_length)
+				{
+					string s_sub = s.substr(current_index,step);
+					find_words = findWords(s_sub,word_count);
+					if (find_words)
+					{
+						temp_word_count[s_sub]++;
+						if(temp_word_count[s_sub] > word_count[s_sub])
+						{
+							find_words = false;
+							break;
+						}
+						current_index += step;
+					}
+					else
+					{
+						find_words = false;
+						break;
+					}
+				}
+				if (find_words)
+				{
+					result.push_back(index_s);
+				}
+			}
+		}
+		
+		return result;
+    }
+	bool findWords(string& s_sub, unordered_map<string,int>& word_count)
+	{
+		bool result = false;
+		if (!s_sub.empty() && !word_count.empty())
+		{
+			result = word_count.find(s_sub) != word_count.end();
+		}
+		return result;
+	}
+};
