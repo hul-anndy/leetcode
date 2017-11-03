@@ -1,0 +1,99 @@
+/*
+Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
+If such arrangement is not possible, it must rearrange it as the lowest possible order (ie, sorted in ascending order).
+The replacement must be in-place, do not allocate extra memory.
+Here are some examples. Inputs are in the left-hand column and its corresponding outputs are in the right-hand column.
+1,2,3 ¡ú 1,3,2
+3,2,1 ¡ú 1,2,3
+1,1,5 ¡ú 1,5,1
+
+this is wrong:
+1 2 3 4 -- 1 2 4 3 -- 1 4 2 3 -- 1 4 3 2 -- 4 1 2 3
+true is:
+1 2 3 4 -- 1 2 4 3 -- 1 3 2 4 -- 1 3 4 2 -- 1 4 2 3 -- 1 4 3 2
+
+Note:
+first thinking:
+Try to find first descending order position from back to front, 
+one special case: all order are descending, we should sort sequence by ascending order.
+
+but this case is not work correctly:
+Input:
+[1,3,2]
+Output:
+[3,1,2]
+Expected:
+[2,1,3]
+
+Submission Result: Wrong Answer More Details 
+
+Input:
+[2,3,1]
+Output:
+[1,2,3]
+Expected:
+[3,1,2]
+
+
+Input:
+[1,5,1]
+Output:
+[1,1,5]
+Expected:
+[5,1,1]
+*/
+class Solution {
+public:
+	void nextPermutation(vector<int>& nums) {
+		if (!nums.empty())
+		{
+			int first_descending = nums.size() - 1;
+			while (first_descending > 0)
+			{
+				if (nums[first_descending] > nums[first_descending - 1])
+				{
+					break;
+				}
+				first_descending--;
+			}
+			if (first_descending != 0)
+			{
+				/*//nums maybe repeated, normal binary search can not find the last bigger number in end descending order sequence.
+				int swap_p = binarySearch(nums, first_descending, nums.size() - 1, nums[first_descending - 1]);
+				if (swap_p > 0 && nums[first_descending - 1] > nums[swap_p])
+				{
+					swap_p--;
+				}*/
+				int swap_p = first_descending;
+				while (swap_p+1 < nums.size() && nums[swap_p+1] > nums[first_descending-1])
+				{
+					swap_p++;
+				}
+				std::swap(nums[swap_p], nums[first_descending - 1]);
+				std::sort(nums.begin() + first_descending, nums.end());
+			}
+			else
+			{
+				std::sort(nums.begin(), nums.end());
+			}
+		}
+	}
+	int binarySearch(vector<int>& nums, int left_p, int right_p, int value)
+	{
+		if (left_p >= right_p)
+		{
+			return right_p;
+		}
+		int median = (left_p + right_p) / 2;
+		if (nums[median] == value)
+			return median;
+		else if (nums[median] > value)
+		{
+			return binarySearch(nums, median + 1, right_p, value);
+		}
+		else if (nums[median] < value)
+		{
+			return binarySearch(nums, left_p, median - 1, value);
+		}
+	}
+};
