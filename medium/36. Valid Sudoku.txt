@@ -1,0 +1,104 @@
+/*
+Determine if a Sudoku is valid, according to: Sudoku Puzzles - The Rules.
+The Sudoku board could be partially filled, where empty cells are filled with the character '.'
+
+A partially filled sudoku which is valid.
+Note:
+A valid Sudoku board (partially filled) is not necessarily solvable. Only the filled cells need to be validated.
+[
+[".","8","7","6","5","4","3","2","1"],
+["2",".",".",".",".",".",".",".","."],
+["3",".",".",".",".",".",".",".","."],
+["4",".",".",".",".",".",".",".","."],
+["5",".",".",".",".",".",".",".","."],
+["6",".",".",".",".",".",".",".","."],
+["7",".",".",".",".",".",".",".","."],
+["8",".",".",".",".",".",".",".","."],
+["9",".",".",".",".",".",".",".","."]]
+
+Note: Pay attention to condition of separating sudoku to nine block.
+index = row/3*3 + column/3;
+
+Determine repetition by hash map.
+*/
+
+class Solution {
+public:
+	const int ERROR_RESULT_INT = -1;
+	const char CHAR_DOT = '.';
+	const char CHAR_ZERO = '0';
+	const char CHAR_NINE = '9';
+	bool m_rowRecord[9][10] = {0};
+	bool m_columnRecord[9][10] = {0};
+	bool m_blockRecord[9][10] = {0};
+	
+    bool isValidSudoku(vector<vector<char>>& board) {
+		int result = true;
+        for (int row_index = 0; row_index < board.size(); ++row_index)
+		{
+			for (int column_index = 0; column_index < board[row_index].size(); ++column_index)
+			{
+				if (!recordSudoku(row_index,column_index,board[row_index][column_index]))
+				{
+					result = false;
+					break;
+				}
+			}
+			if (!result)
+				break;
+		}
+		return result;
+    }
+	int convertChar(const char c)
+	{
+		int result = ERROR_RESULT_INT;
+		if (c != CHAR_DOT && CHAR_ZERO <= c && c <= CHAR_NINE)
+		{
+			result = (int)c - (int)CHAR_ZERO;
+		}
+		return result;
+	}
+	bool recordSudoku(const int row, const int column, const char value)
+	{
+		bool result = true;
+		int int_value = convertChar(value);
+		if (int_value != ERROR_RESULT_INT)
+		{
+			result = recordRow(row,int_value)
+			&&recordColumn(column,int_value)
+			&&recordBlock(row,column,int_value);
+		}
+		return result;
+	}
+	bool recordRow(const int row, const int value)
+	{
+		bool result = false;
+		if (!m_rowRecord[row][value])
+		{
+			m_rowRecord[row][value] = true;
+			result = true;
+		}
+		return result;
+	}
+	bool recordColumn(const int column, const int value)
+	{
+		bool result = false;
+		if (!m_columnRecord[column][value])
+		{
+			m_columnRecord[column][value] = true;
+			result = true;
+		}
+		return result;
+	}
+	bool recordBlock(const int row, const int column, const int value)
+	{
+		bool result = false;
+		int block_convert = row/3*3 + column/3;
+		if (!m_blockRecord[block_convert][value])
+		{
+			m_blockRecord[block_convert][value] = true;
+			result = true;
+		}
+		return result;
+	}
+};
