@@ -1,0 +1,181 @@
+/*
+Write a program to solve a Sudoku puzzle by filling the empty cells.
+Empty cells are indicated by the character '.'.
+You may assume that there will be only one unique solution.
+
+A sudoku puzzle...
+
+...and its solution numbers marked in red.
+
+{'7','.','.','.','.','.','.','.','.'},
+{'.','2','.','1','.','9','.','.','.'},
+{'.','.','7','.','.','.','2','4','.'},
+{'.','6','4','.','1','.','5','9','.'},
+{'.','9','8','.','.','.','3','.','.'},
+{'.','.','.','8','.','3','.','2','.'},
+{'.','.','.','.','.','.','.','.','6'},
+{'.','.','.','2','7','5','9','.','.'}}
+
+
+Note: Just like 36. Valid Sudoku, but more detials of condition need be considered.
+And it is a typical depth-first search.
+*/
+
+class Solution {
+public:
+	const int ERROR_RESULT_INT = -1;
+	const char CHAR_DOT = '.';
+	const char CHAR_ZERO = '0';
+	const char CHAR_NINE = '9';
+	bool m_rowRecord[9][10] = {0};
+	bool m_columnRecord[9][10] = {0};
+	bool m_blockRecord[9][10] = {0};
+	
+	vector<std::pair<int,int>> m_vectorPairRowColumn;
+	
+    void solveSudoku(vector<vector<char>>& board)
+	{
+		if (isValidSudoku(board))
+		{
+			for (int row_index=0; row_index < board.size(); ++row_index)
+			{
+				for (int column_index=0; column_index < board.size(); ++column_index)
+				{
+					if (board[row_index][column_index] == CHAR_DOT)
+					{
+						m_vectorPairRowColumn.push_back(std::make_pair(row_index,column_index));
+					}
+				}
+			}
+			depthFirstSearch(board,0);
+		}
+	
+    }
+	bool depthFirstSearch(vector<vector<char>> &board, const int depth_step)
+	{
+		if (depth_step == m_vectorPairRowColumn.size())
+			return true;
+		bool result = false;
+		std::pair<int,int> row_column = m_vectorPairRowColumn[depth_step];
+		for (int value = 1; value < 10; ++value)
+		{
+			if (recordSudoku(row_column.first, row_column.second, value))
+			{
+				board[row_column.first][row_column.second] = convertDigitToChar(value);
+				result = depthFirstSearch(board, depth_step+1);
+				if (result)
+					return result;
+				else
+				{
+					board[row_column.first][row_column.second] = CHAR_DOT;
+					clearSudoku(row_column.first, row_column.second, value);
+				}
+					
+			}
+		}
+		return result;
+	}
+	
+    bool isValidSudoku(vector<vector<char>>& board) {
+		int result = true;
+        for (int row_index = 0; row_index < board.size(); ++row_index)
+		{
+			for (int column_index = 0; column_index < board[row_index].size(); ++column_index)
+			{
+				if (!recordSudoku(row_index,column_index,board[row_index][column_index]))
+				{
+					result = false;
+					break;
+				}
+			}
+			if (!result)
+				break;
+		}
+		return result;
+    }
+	int convertCharToInt(const char c)
+	{
+		int result = ERROR_RESULT_INT;
+		if (c != CHAR_DOT && CHAR_ZERO <= c && c <= CHAR_NINE)
+		{
+			result = (int)c - (int)CHAR_ZERO;
+		}
+		return result;
+	}
+	char convertDigitToChar(const int i)
+	{
+		char result = CHAR_ZERO + i;
+		return result;
+	}
+	bool recordSudoku(const int row, const int column, const char value)
+	{
+		bool result = true;
+		int int_value = convertCharToInt(value);
+		if (int_value != ERROR_RESULT_INT)
+		{
+			result = recordSudoku(row, column, int_value);
+		}
+		return result;
+	}
+	bool recordSudoku(const int row, const int column, const int value)
+	{
+		bool result = false;
+		if (recordRow(row, value))
+		{
+			if (recordColumn(column, value))
+			{
+				if (recordBlock(row, column, value))
+					result = true;
+				else
+				{
+					m_columnRecord[column][value] = false;
+					m_rowRecord[row][value] = false;
+				}
+			}
+			else
+				m_rowRecord[row][value] = false;
+		}
+		return result;
+	}
+	void clearSudoku(const int row, const int column, const int value)
+	{
+		m_rowRecord[row][value] = false;
+		m_columnRecord[column][value] = false;
+		m_blockRecord[calculateBlockIndex(row,column)][value] = false;
+	}
+	bool recordRow(const int row, const int value)
+	{
+		bool result = false;
+		if (!m_rowRecord[row][value])
+		{
+			m_rowRecord[row][value] = true;
+			result = true;
+		}
+		return result;
+	}
+	bool recordColumn(const int column, const int value)
+	{
+		bool result = false;
+		if (!m_columnRecord[column][value])
+		{
+			m_columnRecord[column][value] = true;
+			result = true;
+		}
+		return result;
+	}
+	int calculateBlockIndex(const int row, const int column)
+	{
+		return row/3*3 + column/3;
+	}
+	bool recordBlock(const int row, const int column, const int value)
+	{
+		bool result = false;
+		int block_convert = calculateBlockIndex(row, column);
+		if (!m_blockRecord[block_convert][value])
+		{
+			m_blockRecord[block_convert][value] = true;
+			result = true;
+		}
+		return result;
+	}
+};
