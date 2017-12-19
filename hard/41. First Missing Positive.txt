@@ -1,0 +1,47 @@
+/*
+Given an unsorted integer array, find the first missing positive integer.
+For example,
+Given [1,2,0] return 3,
+and [3,4,-1,1] return 2.
+Your algorithm should run in O(n) time and uses constant space.
+
+Note: The first thing to think about this problem is using a hash map. It's ok but use more space and more time.
+This solution is very smart: don't use extra space and it is fast enough.
+But the defect is changing the input data.
+
+*/
+
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+		int i = 0;
+		int temp;
+		while (i < nums.size())
+		{
+			if (nums[i] > 0 && nums[i] <= nums.size() && nums[i] != i+1 && nums[i] != nums[nums[i]-1])
+			{
+				temp = nums[nums[i]-1];
+				nums[nums[i]-1] = nums[i];
+				nums[i] = temp;
+			}
+			else
+			{
+				++i;
+			}
+		}
+		int result = -1;
+		for (int i = 0; i < nums.size(); ++i)
+		{
+			if(nums[i] != i+1)
+			{
+				result = i+1;
+				break;
+			}
+		}
+		if (result == -1)
+		{
+			result = nums.size() + 1;
+		}
+		return result;
+    }
+};
