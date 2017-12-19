@@ -1,0 +1,49 @@
+/*
+Given a set of candidate numbers (C) (without duplicates) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+The same repeated number may be chosen from C unlimited number of times.
+Note:
+All numbers (including target) will be positive integers.
+The solution set must not contain duplicate combinations.
+For example, given candidate set [2, 3, 6, 7] and target 7, 
+A solution set is: 
+[
+  [7],
+  [2, 2, 3]
+]
+
+
+[2,3,5]
+8
+
+Note:
+A simple DFS. Pay attention to depth.
+*/
+
+class Solution {
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        std::sort(candidates.begin(),candidates.end());
+		vector<vector<int>> result;
+		vector<int> single_result;
+		depthFirstSearch(candidates,0,0,target,single_result,result);
+		return result;
+    }
+	
+	void depthFirstSearch(vector<int>& candidates, int depth, int current_sum, const int target, vector<int> &single_result, vector<vector<int>>&result)
+	{
+		if (depth == candidates.size() || current_sum > target)
+			return;
+		if (current_sum == target)
+		{
+			result.push_back(single_result);
+		}
+		for (int i = depth; i < candidates.size(); ++i)
+		{
+			single_result.push_back(candidates[i]);
+
+			depthFirstSearch(candidates, i, current_sum + candidates[i], target, single_result, result);
+
+			single_result.pop_back();
+		}
+	}
+};
