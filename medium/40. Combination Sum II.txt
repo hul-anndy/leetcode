@@ -1,0 +1,52 @@
+/*
+Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+Each number in C may only be used once in the combination.
+Note:
+All numbers (including target) will be positive integers.
+The solution set must not contain duplicate combinations.
+For example, given candidate set [10, 1, 2, 7, 6, 1, 5] and target 8, 
+A solution set is: 
+[
+  [1, 7],
+  [1, 2, 5],
+  [2, 6],
+  [1, 1, 6]
+]
+
+Note: 
+A simple DFS, please be care with the depth of search.
+*/
+
+class Solution {
+public:
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        std::sort(candidates.begin(), candidates.end());
+		vector<vector<int>> result;
+		vector<int> single_result;
+		dfsCombinationSum(candidates, 0, 0, target, single_result, result);
+		return result;
+    }
+	
+	void dfsCombinationSum(const vector<int>& candidates, const int depth, const int current_sum,
+		const int target, vector<int>& single_result, vector<vector<int>>& result)
+	{
+		if (current_sum == target)
+		{
+			result.push_back(single_result);
+			return;
+		}
+		if (depth == candidates.size() || current_sum > target)
+			return;
+
+		int i = depth;
+		while ( i < candidates.size())
+		{
+			single_result.push_back(candidates[i]);
+			dfsCombinationSum(candidates, i+1, current_sum + candidates[i], target, single_result, result);
+			single_result.pop_back();
+			int old_i = i;
+			while(i < candidates.size() && candidates[old_i] == candidates[i])
+				++i;
+		}
+	}
+};
