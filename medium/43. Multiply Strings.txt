@@ -1,0 +1,149 @@
+/*
+Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2.
+
+Note:
+
+1. The length of both num1 and num2 is < 110.
+2. Both num1 and num2 contains only digits 0-9.
+3. Both num1 and num2 does not contain any leading zero.
+4. You must not use any built-in BigInteger library or convert the inputs to integer directly.
+
+
+Note:
+First think is that simple big number multiply.
+Pay atttention to remove zero in the front.
+
+*/
+
+class Solution {
+public:
+	const char CHAR_ZERO = '0';
+	const char CHAR_NINE = '9';
+	const int INT_RESULT_ERROR = -1;
+	const char CHAR_RESULT_ERROR = '!';
+    string multiply(string num1, string num2) {
+        string result;
+		if (num1.size() < num2.size())
+			result = multiplyLongShort(num2, num1);
+		else
+			result = multiplyLongShort(num1, num2);
+
+		return result;
+    }
+	
+	string strAdd(string num1, string num2) {
+        string result;
+		int carry = 0;
+		int s1_index = num1.size() -1;
+		int s2_index = num2.size() -1;
+		while (s1_index >= 0 || s2_index >= 0)
+		{
+			int single_sum = carry;
+			if (s1_index >= 0)
+			{
+				int single_1 = char2Int(num1[s1_index]);
+				if (single_1 != INT_RESULT_ERROR)
+				{
+					single_sum += single_1;
+				}
+				
+				s1_index--;
+			}
+			if (s2_index >= 0)
+			{
+				int single_2 = char2Int(num2[s2_index]);
+				if (single_2 != INT_RESULT_ERROR)
+				{
+					single_sum += single_2;
+				}
+				
+				s2_index--;
+			}
+			carry = single_sum / 10;
+			single_sum = single_sum % 10;
+			char single_sum_char = int2Char(single_sum);
+			if (single_sum_char != CHAR_RESULT_ERROR)
+			{
+				result = single_sum_char + result;
+			}
+		}
+		if (carry != 0)
+		{
+			char carry_char = int2Char(carry);
+				if (carry_char != CHAR_RESULT_ERROR)
+				{
+					result = carry_char + result;
+				}
+			
+			carry = 0;
+		}
+		
+		//remove head zero
+		int i = 0;
+		while (i < result.size() && result[i] == CHAR_ZERO)
+		{
+			i++;
+		}
+		if (i == result.size())
+		{
+			result = "0";
+		}
+		else
+		{
+			result = result.substr(i,result.size() - i);
+		}
+		
+		return result;
+    }
+	int char2Int(const char c)
+	{
+		int result = INT_RESULT_ERROR;
+		if (CHAR_ZERO <= c && c <= CHAR_NINE)
+		{
+			result = c - CHAR_ZERO;
+		}
+		return result;
+	}
+	char int2Char(const int i)
+	{
+		char result = CHAR_RESULT_ERROR;
+		if (0 <= i && i <= 9)
+		{
+			result = CHAR_ZERO + i;
+		}
+		return result;
+	}
+private:
+	string multiplyLongShort(string& num1, string& num2)
+	{
+		string result;
+		for (int i = num2.size() - 1; i >= 0; --i)
+		{
+			string str_single_mul = multiplyStringChar(num1, num2[i]);
+			for (int compensation_zero = 0; compensation_zero < num2.size() - 1 - i; ++compensation_zero)
+			{
+				str_single_mul.push_back(CHAR_ZERO);
+			}
+			result = strAdd(result, str_single_mul);
+		}
+		return result;
+	}
+	string multiplyStringChar(string& number, char single_char)
+	{
+		string result;
+		int int_carry =0;
+		int single_int = char2Int(single_char);
+		for (int i = number.size() - 1; i >= 0; --i)
+		{
+			int single_mul = single_int * char2Int(number[i]) + int_carry;
+			int_carry = single_mul / 10;
+			single_mul = single_mul % 10;
+			result = int2Char(single_mul) + result;
+		}
+		if (int_carry != 0)
+		{
+			result = int2Char(int_carry) + result;
+		}
+		return result;
+	}
+};
