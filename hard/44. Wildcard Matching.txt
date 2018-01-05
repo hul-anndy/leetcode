@@ -1,0 +1,190 @@
+/*
+'?' Matches any single character.
+'*' Matches any sequence of characters (including the empty sequence).
+
+The matching should cover the entire input string (not partial).
+
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+
+Some examples:
+isMatch("aa","a") ¡ú false
+isMatch("aa","aa") ¡ú true
+isMatch("aaa","aa") ¡ú false
+isMatch("aa", "*") ¡ú true
+isMatch("aa", "a*") ¡ú true
+isMatch("ab", "?*") ¡ú true
+isMatch("aab", "c*a*b") ¡ú false
+
+Note:
+My solution is the DFS function but it is time limit exceeded...
+I am so sad and  confused. I feel the thinking of DFS function is looked like the "while" function.
+They are using the same thinking that finding the first character follow '*', and start matching string s and p.
+
+At the last, I understand why DFS is too slow: it search every * and then recall when recall, but it is not necessary. 
+Attention: when meet a new '*' character, we can ignore previous '*'. Because the rule 2: '*' can matching any string.
+*/
+
+class Solution {
+public:
+	//using while used 38ms
+	bool isMatch3(string s, string p)
+	{
+		bool result = false;
+		bool is_meet_start = false;
+		int index_s = 0; int index_p = 0;
+		int index_s_meet_star = 0; int index_p_meet_star = 0;
+		while (index_s < s.size() && (is_meet_start || index_p < p.size()))
+		{
+			if (isCharMatched(s[index_s], p[index_p]))
+			{
+				index_s++;
+				index_p++;
+			}
+			else if (p[index_p] == '*')
+			{
+				is_meet_start = true;
+				if (index_p+1 >= p.size())
+				{
+					result = true;
+					break;
+				}
+				index_s_meet_star = index_s;
+				index_p++;
+				index_p_meet_star = index_p;
+			}
+			else
+			{
+				if (!is_meet_start)
+				{
+					break;
+				}
+				index_s_meet_star++;
+				index_s = index_s_meet_star;
+				index_p = index_p_meet_star;
+			}
+		}
+		if (!result)
+		{
+			while (index_p < p.size() && p[index_p] == '*')
+			{
+				index_p++;
+			}
+			if (index_s == s.size() && index_p == p.size())
+			{
+				result = true;
+			}
+		}
+
+		return result;
+	}
+	
+	//use DFS is time limit exceeded
+	bool isMatch(string s, string p)
+	{
+		bool result = false;
+
+		result = isMatchIndex(s, p, 0, 0);
+
+		return result;
+	}
+
+	bool isMatch2(string s, string p) {
+		int ss = 0;
+		int pp = 0;
+		int index_s = 0; int index_p = 0;
+		bool has_star = false;
+		while (index_s < s.size() && (has_star || index_p < p.size())) {
+			if (isCharMatched(s[index_s], p[index_p])) {
+				++index_s;
+				++index_p;
+			}
+			else if (p[index_p] == '*') {
+				has_star = true;
+				if (index_p+1 == p.size())
+					return true;
+				ss = index_s;
+				pp = ++index_p;
+			}
+			else {
+				if (!has_star)
+					return false;
+				index_s = ++ss;
+				index_p = pp;
+			}
+		}
+		while (index_p < p.size() && p[index_p] == '*') {
+			++index_p;
+		}
+		if (index_s == s.size() && index_p == p.size())
+			return true;
+		return false;
+	}
+
+private:
+	bool isMatchIndex(const string& s, const string& p, int index_s, int index_p)
+	{
+		bool result = index_s >= s.size() && index_p >= p.size();
+		while (index_s < s.size() || index_p < p.size())
+		{
+			if (index_s < s.size() && index_p >= p.size())
+			{
+				break;
+			}
+			else if (index_s >= s.size() && index_p < p.size())
+			{
+				while (index_p < p.size() && p[index_p] == '*')
+				{
+					index_p++;
+				}
+				if (index_p == p.size())
+				{
+					result = true;
+				}
+				break;
+			}
+			else if (isCharMatched(s[index_s], p[index_p]))
+			{
+				if (index_s + 1 == s.size() && index_p + 1 == p.size())
+				{
+					result = true;
+					break;
+				}
+				index_s++;
+				index_p++;
+			}
+			else if (p[index_p] == '*')
+			{
+				while (index_p+1 < p.size() && p[index_p+1] == '*')
+				{
+					index_p++;
+				}
+				if (index_p+1 == p.size() && p[index_p] == '*')
+				{
+					result = true;
+					break;
+				}
+				if (isMatchIndex(s, p, index_s, index_p+1))
+				{
+					result = true;
+					break;
+				}
+				else
+				{
+					index_s++;
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	bool isCharMatched(const char first, const char second)
+	{
+		return first == '?' || second == '?' || first == second;
+	}
+};
