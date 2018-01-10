@@ -1,0 +1,65 @@
+/*
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
+
+Each element in the array represents your maximum jump length at that position.
+
+Your goal is to reach the last index in the minimum number of jumps.
+
+For example:
+Given array A = [2,3,1,1,4]
+
+The minimum number of jumps to reach the last index is 2. (Jump 1 step from index 0 to 1, then 3 steps to the last index.)
+
+Note:
+You can assume that you can always reach the last index.
+
+[1,2]
+[2,1]
+
+Note:
+My first think meet time limite exceeded. 
+But it is quickly that I have a elegant pruning! That is the effect about "is_steps_effect_arr" in my code.
+*/
+
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int result = 0;
+		if (!nums.empty())
+		{
+			int length = nums.size();
+		
+			int* steps_arr = new int[length];
+			bool* is_steps_effect_arr = new bool[length];
+			
+			for (int i = 0; i < length; ++i)
+			{
+				steps_arr[i] = length;
+				is_steps_effect_arr[i] = true;
+			}
+			steps_arr[0] = 0;
+			for (int i = 0; i < length; ++i)
+			{
+				if (is_steps_effect_arr[i])
+				{
+					for (int j = i + 1; j < length && j <= i + nums[i]; ++j)
+					{
+						if (j+nums[j] <= i + nums[i])
+						{
+							is_steps_effect_arr[j] = false;
+						}
+						if (steps_arr[i]+1 < steps_arr[j])
+						{
+							steps_arr[j] = steps_arr[i] +1;
+						}
+					}
+				}
+				
+			}
+			result = steps_arr[length-1];
+			delete[] steps_arr;
+			delete[] is_steps_effect_arr;
+		}
+		return result;
+    }
+};
