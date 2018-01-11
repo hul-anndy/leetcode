@@ -1,0 +1,152 @@
+/*
+You are given an n x n 2D matrix representing an image.
+
+Rotate the image by 90 degrees (clockwise).
+
+Note:
+You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.
+
+Example 1:
+
+Given input matrix = 
+[
+  [1,2,3],
+  [4,5,6],
+  [7,8,9]
+],
+
+rotate the input matrix in-place such that it becomes:
+[
+  [7,4,1],
+  [8,5,2],
+  [9,6,3]
+]
+Example 2:
+
+Given input matrix =
+[
+  [ 5, 1, 9,11],
+  [ 2, 4, 8,10],
+  [13, 3, 6, 7],
+  [15,14,12,16]
+], 
+
+rotate the input matrix in-place such that it becomes:
+[
+  [15,13, 2, 5],
+  [14, 3, 4, 1],
+  [12, 6, 8, 9],
+  [16, 7,10,11]
+]
+
+Given input matrix =
+[
+  [ 5, 1, 9,11,17],
+  [ 2, 4, 8,10,18],
+  [13, 3, 6, 7,19],
+  [15,14,12,16,20],
+  [21,22,23,24,25],
+], 
+
+
+[
+[1,2,3],
+[4,5,6],
+[7,8,9]]
+Your answer
+[
+[3,2,9],
+[4,5,6],
+[1,8,7]]
+Expected answer
+[
+[7,4,1],
+[8,5,2],
+[9,6,3]]
+
+Note:
+Let's start thinking:
+row_new = column_old;
+column_new = max_number - row_old;
+
+And then rotate a quarter area. But there are many edge case, please be careful!
+
+error result:
+Input:
+[
+[1,2,3,4,5],
+[6,7,8,9,10],
+[11,12,13,14,15],
+[16,17,18,19,20],
+[21,22,23,24,25]]
+Output:
+[
+[21,16,11,4,1],
+[6,17,12,7,2],
+[23,18,13,8,3],
+[24,19,14,9,20],
+[25,22,15,10,5]]
+Expected:
+[
+[21,16,11,6,1],
+[22,17,12,7,2],
+[23,18,13,8,3],
+[24,19,14,9,4],
+[25,20,15,10,5]]
+*/
+
+
+class Solution {
+public:
+	void rotate(vector<vector<int>>& matrix) {
+		for (int row = 0; row <= matrix.size() / 2; ++row)
+		{
+			for (int column = 0; column < matrix.size() ; ++column)
+			{
+				if (isInFirstRatateArea((int)matrix.size() - 1, row, column))
+				{
+					rotateSingle(matrix, row, column);
+				}
+			}
+		}
+	}
+private:
+	void rotateSingle(vector<vector<int>>& matrix, const int row, const int column)
+	{
+		int row_new[3];
+		int column_new[3];
+		int max_number = (int)matrix.size() - 1;
+		row_new[0] = column;
+		column_new[0] = max_number - row;
+		row_new[1] = column_new[0];
+		column_new[1] = max_number - row_new[0];
+		row_new[2] = column_new[1];
+		column_new[2] = max_number - row_new[1];
+		swapFourNumber(matrix[row][column], matrix[row_new[0]][column_new[0]]
+			, matrix[row_new[1]][column_new[1]], matrix[row_new[2]][column_new[2]]);
+	}
+	void swapFourNumber(int& first, int& second, int& third, int& fourth)
+	{
+		if (first != second || second != third || third != fourth || fourth != first)
+		{
+			int t = fourth;
+			fourth = third;
+			third = second;
+			second = first;
+			first = t;
+		}
+	}
+	bool isInFirstRatateArea(const int max_number, const int row, const int column)
+	{
+		bool result = false;
+		if (max_number % 2 == 0)
+		{
+			result = (column >= row && column <= max_number - row - 1);
+		}
+		else
+		{
+			result = (column >= row && column <= max_number - row - 1) || (row == max_number / 2 && column == max_number / 2);
+		}
+		return result;
+	}
+};
