@@ -1,0 +1,68 @@
+/*
+Given an array of strings, group anagrams together.
+
+For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
+Return:
+
+[
+  ["ate", "eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+Note: All inputs will be in lower-case.
+*/
+
+class Solution {
+public:
+	const char char_a = 'a';
+	
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        vector<vector<string>> result;
+		std::unordered_map<int,vector<string>> unordered_map;
+		vector<int> vec_hash;
+		for (int i = 0; i < strs.size(); ++i)
+		{
+			int hash = stringHashByChar(strs[i]);
+			//use unordered_map is too fast!
+			unordered_map[hash].push_back(strs[i]);
+			/*int find_index = -1;
+			for (int j = 0; j < vec_hash.size(); ++j)
+			{
+				if (hash == vec_hash[j])
+				{
+					find_index = j;
+				}
+			}
+			if (find_index != -1)
+			{
+				result[find_index].push_back(strs[i]);
+			}
+			else
+			{
+				//TODO: check is equal
+				vector<string> single_vec;
+				single_vec.push_back(strs[i]);
+				result.push_back(single_vec);
+				vec_hash.push_back(hash);
+			}*/
+		}
+		for (auto item: unordered_map)
+		{
+			result.push_back(item.second);
+		}
+		return result;
+    }
+	int stringHashByChar(const string& str)
+	{
+		int result = 0;
+		for (int i = 0; i < str.size(); ++i)
+		{
+			result += charHash(str[i]);
+		}
+		return result;
+	}
+	int charHash(const char c)
+	{
+		return (c - char_a + 1)*(c - char_a + 1)* (c - char_a + 1)*(c - char_a + 1)* (c - char_a + 1)*(c - char_a + 1)*(c - char_a + 3)* (c - char_a + 2);
+	}
+};
