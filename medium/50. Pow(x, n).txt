@@ -1,0 +1,92 @@
+/*
+Implement pow(x, n).
+
+
+Example 1:
+
+Input: 2.00000, 10
+Output: 1024.00000
+Example 2:
+
+Input: 2.10000, 3
+Output: 9.26100
+
+Note:
+1. When n < 0, the result should be (double)1 / result;
+2. Divide and conquar algorithm is better than O(n) time complexity algorithm.
+*/
+
+class Solution {
+public:
+	double myPow(double x, int n) {
+		bool is_negative = n < 0;
+		if (is_negative)
+		{
+			n = -n;
+		}
+		double result = myPower(x, n);
+		
+		if (is_negative)
+		{
+			if (!doubleEqual(result,0))
+				result = (double)1 / result;
+			else
+				result = 0;
+		}
+		return result;
+	}
+    double myPow1(double x, int n) {
+        double result = 1;
+		if (n != 0)
+		{
+			bool is_negative = n < 0;
+			if (is_negative)
+			{
+				n = -n;
+			}
+			for (int i = 0; i < n ; ++i)
+			{
+				result *= x;
+			}
+			if (is_negative)
+			{
+				result = (double)1 / result;
+			}
+		}
+		return result;
+    }
+private:
+	const double MIN_PARTITION = 0.000000001;
+	bool doubleEqual(const double first, const double second)
+	{
+		double diffirent = first-second;
+		return diffirent > -MIN_PARTITION && diffirent < MIN_PARTITION;
+	}
+	double myPower(const double x, int n)
+	{
+		if (n != 0)
+		{
+			if (doubleEqual(x,0))
+			{
+				return 0;
+			}
+			if (n < 0)
+			{
+				n = -n;
+			}
+			double half_power = myPower(x,n/2);
+			if (n % 2 == 0)
+			{
+				return half_power*half_power;
+			}
+			else
+			{
+				return half_power*half_power*x;
+			}
+		}
+		else
+		{
+			return 1;
+		}
+	}
+};
