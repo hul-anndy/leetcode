@@ -1,0 +1,94 @@
+/*
+Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
+
+For example,
+Given the following matrix:
+
+[
+ [ 1, 2, 3 ],
+ [ 4, 5, 6 ],
+ [ 7, 8, 9 ]
+]
+You should return [1,2,3,6,9,8,7,4,5].
+[1,2,3,6,8,7,4]
+[1,2,3,6,9,8,7,4]
+*/
+
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        vector<int> result;
+		
+		spiral(result, matrix, 0);
+		return result;
+    }
+private:
+	void spiral(vector<int>& result, vector<vector<int>>& matrix, int deep)
+	{
+		if (!matrix.empty())
+		{
+			const int row_edge = matrix.size()-deep-1;
+			if (!matrix[0].empty())
+			{
+				const int column_edge = matrix[0].size()-deep-1;
+				int min_edge = matrix.size() <= matrix[0].size() ? matrix.size() : matrix[0].size();
+				if (deep == min_edge / 2)
+				{
+					if (min_edge % 2 == 0)
+					{
+						return;
+					}
+					else
+					{
+						//for centre content
+						if (row_edge <= column_edge)
+						{
+							int row = deep;
+							for(int column = deep; column <= column_edge; ++column)
+							{
+								result.push_back(matrix[row][column]);
+							}
+							return;
+						}
+						else
+						{
+							int column = deep;
+							for (int row = deep; row <= row_edge;++row)
+							{
+								result.push_back(matrix[row][column]);
+							}
+							return;
+						}
+					}	
+				}
+				
+				//up row
+				int const_row = deep;
+				for(int column = deep; column < column_edge; ++column)
+				{
+					result.push_back(matrix[const_row][column]);
+				}
+				//right column
+				int const_column = column_edge;
+				for (int row = deep; row < row_edge;++row)
+				{
+					result.push_back(matrix[row][const_column]);
+				}
+				//down row
+				const_row = row_edge;
+				for(int column = column_edge; column >deep; column--)
+				{
+					result.push_back(matrix[const_row][column]);
+				}
+				//left column
+				const_column = deep;
+				for(int row = row_edge; row > deep; row--)
+				{
+					result.push_back(matrix[row][const_column]);
+				}
+				spiral(result, matrix, deep+1);
+			}
+			
+		}
+	}
+};
