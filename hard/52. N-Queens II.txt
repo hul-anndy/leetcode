@@ -1,0 +1,169 @@
+/*
+Follow up for N-Queens problem.
+
+Now, instead outputting board configurations, return the total number of distinct solutions.
+
+Note:
+Same as 51.
+Only change the condition when dfs need be return.
+*/
+
+class Solution {
+public:
+	const char CHAR_DOT = '.';
+	const char CHAR_Q = 'Q';
+	int totalNQueens(int n) {
+        initialize(n);
+		int result = 0;
+		dfsNQueensTotal(result,n,0);
+		return result;
+    }
+    vector<vector<string>> solveNQueens(int n) {
+		initialize(n);
+        vector<vector<string>> result;
+		vector<string> single_result;
+		string single_line;
+		for (int i = 0; i < n; ++i)
+		{
+			single_line.push_back(CHAR_DOT);
+		}
+		for (int i = 0; i < n; ++i)
+		{
+			single_result.push_back(single_line);
+		}
+		dfsNQueens(result, single_result, 0);
+		return result;
+    }
+private:
+	void dfsNQueensTotal(int& result, const int& n, const int deep)
+	{
+		if (deep == n)
+		{
+			result++;
+			return;
+		}
+		else
+		{
+			for (int i = 0; i < n; ++i)
+			{
+				if (!isColumnExist(i)
+				&& !isSlashExist(deep,i)
+				&& !isBackSlashExist(deep,i))
+				{
+					setColumn(i,true);
+					setSlash(deep,i,true);
+					setBackSlash(deep,i,true);
+					dfsNQueensTotal(result, n, deep + 1);
+					setColumn(i,false);
+					setSlash(deep,i,false);
+					setBackSlash(deep,i,false);
+				}
+			}
+		}
+	}
+	void dfsNQueens(vector<vector<string>>& result, vector<string> single_result, const int deep)
+	{
+		if (deep == single_result.size())
+		{
+			result.push_back(single_result);
+			return;
+		}
+		else
+		{
+			for (int i = 0; i < single_result.size(); ++i)
+			{
+				if (!isColumnExist(i)
+				&& !isSlashExist(deep,i)
+				&& !isBackSlashExist(deep,i))
+				{
+					setColumn(i,true);
+					setSlash(deep,i,true);
+					setBackSlash(deep,i,true);
+					single_result[deep][i] = CHAR_Q;
+					dfsNQueens(result, single_result, deep + 1);
+					setColumn(i,false);
+					setSlash(deep,i,false);
+					setBackSlash(deep,i,false);
+					single_result[deep][i] = CHAR_DOT;
+				}
+			}
+		}
+	}
+	void initialize(const int number)
+	{
+		m_nNumber = number;
+		for (int i = 0; i < number; ++i)
+		{
+			m_bColumn.push_back(false);
+		}
+		for (int i = 0; i < number*2-1; ++i)
+		{
+			m_bSlash.push_back(false);
+			m_bBackSlash.push_back(false);
+		}
+	}
+	void setColumn(const int column, const bool is_exist)
+	{
+		if (column < m_bColumn.size())
+		{
+			m_bColumn[column] = is_exist;
+		}
+	}
+	bool isColumnExist(const int column)
+	{
+		bool result = true;
+		if (column < m_bColumn.size())
+		{
+			result = m_bColumn[column];
+		}
+		return result;
+	}
+	int getSlashIndex(const int row, const int column)
+	{
+		return row + column;
+	}
+	void setSlash(const int row, const int column, const bool is_exist)
+	{
+		int index = getSlashIndex(row, column);
+		if (index < m_bBackSlash.size())
+		{
+			m_bSlash[index] = is_exist;
+		}
+	}
+	bool isSlashExist(const int row, const int column)
+	{
+		bool result = true;
+		int slash_index = getSlashIndex(row, column);
+		if (slash_index < m_bBackSlash.size())
+		{
+			result = m_bSlash[slash_index];
+		}
+		return result;
+	}
+	int getBackSlashIndex(const int row, const int column)
+	{
+		return row - column + m_nNumber - 1;
+	}
+	void setBackSlash(const int row, const int column, const bool is_exist)
+	{
+		int index = getBackSlashIndex(row, column);
+		if (index < m_bBackSlash.size())
+		{
+			m_bBackSlash[index] = is_exist;
+		}
+	}
+	bool isBackSlashExist(const int row, const int column)
+	{
+		bool result = true;
+		int back_slash_index = getBackSlashIndex(row, column);
+		if (back_slash_index < m_bBackSlash.size())
+		{
+			result = m_bBackSlash[back_slash_index];
+		}
+		return result;
+	}
+	int m_nNumber;
+	vector<bool> m_bColumn;
+	vector<bool> m_bSlash;
+	vector<bool> m_bBackSlash;
+};
