@@ -1,0 +1,44 @@
+/*
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
+
+Each element in the array represents your maximum jump length at that position.
+
+Determine if you are able to reach the last index.
+
+For example:
+A = [2,3,1,1,4], return true.
+
+A = [3,2,1,0,4], return false.
+
+Note:
+1. May just like 45.
+So easy, hh.
+*/
+
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+		bool result = true;
+		if (nums.size() > 1)
+		{
+			vector<bool> is_effect(nums.size(), false);
+
+			is_effect[0] = true;
+			for (int i = 0; i < nums.size(); ++i)
+			{
+				if (is_effect[i] && !is_effect[i+nums[i]])
+				{
+					for (int j = i + 1; j <= i + nums[i] && j < nums.size(); ++j)
+					{
+						if (j == nums.size()-1 || j+nums[j] > i + nums[i])
+						{
+							is_effect[j] = true;
+						}
+					}
+				}
+			}
+			result = is_effect[nums.size()-1];
+		}
+        return result;
+    }
+};
