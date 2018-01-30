@@ -1,0 +1,66 @@
+/*
+Given an integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+
+For example,
+Given n = 3,
+
+You should return the following matrix:
+[
+ [ 1, 2, 3 ],
+ [ 8, 9, 4 ],
+ [ 7, 6, 5 ]
+]
+*/
+
+
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        vector<int> line(n,-1);
+		vector<vector<int>> result(n,line);
+		int number = 0;
+		spiralGenerate(result,0,number);
+		return result;
+    }
+	void spiralGenerate(vector<vector<int>>& result, int spiral_deep, int& number)
+	{
+		int total = result.size();
+		if (spiral_deep == total/2 && total%2 != 0)
+		{
+			number++;
+			result[spiral_deep][spiral_deep] = number;
+			return;
+		}
+		if (spiral_deep > total/2)
+		{
+			return;
+		}
+		int column_edge = total - spiral_deep - 1;
+		int row_edge = total - spiral_deep - 1;
+		int const_row = spiral_deep;
+		for (int column = spiral_deep; column < column_edge; ++column)
+		{
+			number++;
+			result[const_row][column] = number;
+		}
+		int const_column = column_edge;
+		for (int row = spiral_deep; row < row_edge; ++row)
+		{
+			number++;
+			result[row][const_column] = number;
+		}
+		const_row = row_edge;
+		for (int column = column_edge; column > spiral_deep; --column)
+		{
+			number++;
+			result[const_row][column] = number;
+		}
+		const_column = spiral_deep;
+		for (int row = row_edge; row > spiral_deep; --row)
+		{
+			number++;
+			result[row][const_column] = number;
+		}
+		spiralGenerate(result, spiral_deep+1, number);
+	}
+};
