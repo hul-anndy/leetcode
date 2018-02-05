@@ -1,0 +1,77 @@
+/*
+Given a list, rotate the list to the right by k places, where k is non-negative.
+
+For example:
+Given 1->2->3->4->5->NULL and k = 2,
+return 4->5->1->2->3->NULL.
+
+//Just move right and we can mod the k by length. 
+//And then the problem become that move last k items to the front.
+//Using two points to find the reverse index k and move.
+*/
+
+/*
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+*/
+
+class Solution{
+public:
+	ListNode *rotateRight(ListNode *head, int k)
+	{
+		ListNode* result = head;
+		if (!result)
+		{
+			return result;
+		}
+		ListNode *head_temp = head;
+		int length = 0;
+		while (head_temp)
+		{
+			head_temp = head_temp->next;
+			length++;
+		}
+		k %= length;
+		if (k >= 0)
+		{
+			ListNode* p_k_temp = head;
+			while (k > 0 && p_k_temp)
+			{
+				k--;
+				p_k_temp = p_k_temp->next;
+			}
+			ListNode* p_k = nullptr;
+			if (p_k_temp)
+			{
+				p_k = head;
+				while (p_k_temp && p_k_temp->next && p_k && p_k->next)
+				{
+					p_k_temp = p_k_temp->next;
+					p_k = p_k->next;
+				}
+			}
+
+			ListNode* p_k_next = nullptr;
+			if (p_k)
+			{
+				p_k_next = p_k->next;
+			}
+			ListNode* p_end = p_k;
+			while (p_end && p_end->next)
+			{
+				p_end = p_end->next;
+			}
+			if (p_k_next)
+			{
+				result = p_k_next;
+				p_end->next = head;
+				p_k->next = nullptr;
+			}
+		}
+		return result;
+	}
+};
+
