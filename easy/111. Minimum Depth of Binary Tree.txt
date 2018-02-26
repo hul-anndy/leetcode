@@ -1,0 +1,93 @@
+/*
+Given a binary tree, find its minimum depth.
+
+The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+
+Note:
+breadth-first search should be faster than depth-first search.
+*/
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+struct BfsItem{
+const TreeNode* node;
+int depth;
+BfsItem(const TreeNode* p_node, const int int_number)
+:node(p_node)
+,depth(int_number)
+{}
+};
+class Solution {
+public:
+//DFS
+	int minDepth(TreeNode* root)
+	{
+		int result = 0;
+		if (root)
+		{
+			dfsMinDepth(root, 1, result);
+		}
+		return result;
+	}
+private:
+	void dfsMinDepth(TreeNode* current_node, int depth, int& result)
+	{
+		if (current_node && (result == 0 || depth < result))//cut some cases for speeding up
+		{
+			if (!current_node->left && !current_node->right)
+			{
+				result = depth;
+			}
+			if (current_node->left)
+			{
+				dfsMinDepth(current_node->left, depth+1, result);
+			}
+			if (current_node->right)
+			{
+				dfsMinDepth(current_node->right, depth+1, result);
+			}
+		}
+	}
+public:
+/*//BFS
+    int minDepth(TreeNode* root) {
+        std::list<BfsItem> bfs_list;
+		int result = 0;
+		int depth = 1;
+		if (root)
+		{
+			pushBackOne(bfs_list,root,depth);
+		}
+		while (!bfs_list.empty())
+		{
+			const TreeNode* current_node = bfs_list.front().node;
+			int current_depth = bfs_list.front().depth;
+			if (current_node)
+			{
+				if (current_node->left)
+					pushBackOne(bfs_list,current_node->left, current_depth+1);
+				if (current_node->right)
+					pushBackOne(bfs_list,current_node->right, current_depth+1);
+				if (!current_node->left && !current_node->right)
+				{
+					result = current_depth;
+					break;
+				}
+			}
+			bfs_list.pop_front();
+		}
+		return result;
+    }*/
+private:
+	void pushBackOne(std::list<BfsItem>& bfs_list, const TreeNode* node, const int depth)
+	{
+		bfs_list.push_back(BfsItem(node,depth));
+	}
+};
