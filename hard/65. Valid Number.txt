@@ -1,0 +1,184 @@
+/*
+Validate if a given string is numeric.
+
+Some examples:
+
+"0" => true 
+" 0.1 " => true 
+"abc" => false 
+"1 a" => false 
+"2e10" => true 
+
+Note: It is intended for the problem statement to be ambiguous. You should gather all requirements up front before implementing one.
+
+Note: Let's create a state machine!
+But the edge about number rule is ambiguous.
+OMG!
+[.][0-9] also is a number.
+[0-9][.] also is a number!
+WTF!
+[0-9][.]e[0-9] is a number!
+*/
+
+class Solution{
+public:
+	const char CHAR_POINT = '.';
+	const char CHAR_E = 'e';
+	const char CHAR_PLUS = '+';
+	const char CHAR_SUB = '-';
+	enum NUMBER_STATE { START_STATE = 0, START_SIGN,START_POINT, PRE_POINT_NUMBER, POINT, AFTER_POINT_NUMBER, FIND_E, AFTER_E_SIGN, AFTER_E_NUMBER, AFTER_E_NUMBER_ONE, ERROR_STATE };
+	bool isNumber(string s)
+	{
+		bool result = false;
+		NUMBER_STATE current_state = START_STATE;
+		int i = 0;
+		stringTrim(s);
+		while (i < s.size())
+		{
+			switch (current_state)
+			{
+			case START_STATE:
+				if (isSign(s[i]))
+				{
+					current_state = START_SIGN;
+				}
+				else if (s[i] == CHAR_POINT)
+				{
+					current_state = START_POINT;
+				}
+				else if (isNumber(s[i]))
+				{
+					current_state = PRE_POINT_NUMBER;
+				}
+				else
+				{
+					current_state = ERROR_STATE;
+				}
+				break;
+			case START_POINT:
+				if (isNumber(s[i]))
+				{
+					current_state = AFTER_POINT_NUMBER;
+				}
+				else
+				{
+					current_state = ERROR_STATE;
+				}
+				break;
+			case START_SIGN:
+				if (isNumber(s[i]))
+				{
+					current_state = PRE_POINT_NUMBER;
+				}
+				else if (s[i] == CHAR_POINT)
+				{
+					current_state = START_POINT;
+				}
+				else
+				{
+					current_state = ERROR_STATE;
+				}
+				break;
+			case PRE_POINT_NUMBER:
+				if (s[i] == CHAR_POINT)
+				{
+					current_state = POINT;
+				}
+				else if (s[i] == CHAR_E)
+				{
+					current_state = FIND_E;
+				}
+				else if (!isNumber(s[i]))
+				{
+					current_state = ERROR_STATE;
+				}
+				break;
+			case POINT:
+				if (s[i] == CHAR_E)
+				{
+					current_state = FIND_E;
+				}
+				else if (isNumber(s[i]))
+				{
+					current_state = AFTER_POINT_NUMBER;
+				}
+				else
+				{
+					current_state = ERROR_STATE;
+				}
+				
+				break;
+			case AFTER_POINT_NUMBER:
+				if (s[i] == CHAR_E)
+				{
+					current_state = FIND_E;
+				}
+				else if (!isNumber(s[i]))
+				{
+					current_state = ERROR_STATE;
+				}
+				break;
+			case FIND_E:
+				if (isSign(s[i]))
+				{
+					current_state = AFTER_E_SIGN;
+				}
+				else if (isNumber(s[i]))
+				{
+					current_state = AFTER_E_NUMBER;
+				}
+				else
+				{
+					current_state = ERROR_STATE;
+				}
+				break;
+			case AFTER_E_SIGN:
+				if (isNumber(s[i]))
+				{
+					current_state = AFTER_E_NUMBER;
+				}
+				else
+				{
+					current_state = ERROR_STATE;
+				}
+				break;
+			case AFTER_E_NUMBER:
+				if (!isNumber(s[i]))
+				{
+					current_state = ERROR_STATE;
+				}
+				break;
+			}
+			if (current_state == ERROR_STATE)
+			{
+				break;
+			}
+			i++;
+		}
+		if (current_state == PRE_POINT_NUMBER || current_state == POINT || current_state == AFTER_POINT_NUMBER || current_state == AFTER_E_NUMBER)
+		{
+			result = true;
+		}
+		return result;
+	}
+	const char CHAR_ZERO = '0';
+	const char CHAR_NINE = '9';
+	const string STRING_WHITE_BLOCK = " \n\r\t";
+private:
+	bool isNumber(const char c)
+	{
+		return c >= CHAR_ZERO && c <= CHAR_NINE;
+	}
+	bool isSign(const char c)
+	{
+		return c == CHAR_PLUS || c == CHAR_SUB;
+	}
+	void stringTrim(string& s)
+	{
+		if (!s.empty())
+		{
+			s.erase(0, s.find_first_not_of(STRING_WHITE_BLOCK));
+			s.erase(s.find_last_not_of(STRING_WHITE_BLOCK) + 1);
+		}
+	}
+};
