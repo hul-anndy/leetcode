@@ -1,0 +1,38 @@
+/*
+Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path.
+
+Note: You can only move either down or right at any point in time.
+Note:
+A simple DP practice.
+f[i][j] = min(f[i-1][j]+g[i][j], f[i][j-1]+g[i][j])
+*/
+
+class Solution {  
+public:
+	int minPathSum(vector<vector<int>>& grid) {
+		int result = 0;
+		if (!grid.empty() && !grid[0].empty())
+		{
+			vector<int> single_line(grid[0].size(), 0);
+			vector<vector<int>> sum_map(grid.size(), single_line);
+			sum_map[0][0] = grid[0][0];
+			for (int i = 0; i < grid.size(); ++i)
+			{
+				for (int j = 0; j < grid[0].size(); ++j)
+				{
+					if (i > 0 && (sum_map[i][j] == 0 || sum_map[i][j] > sum_map[i - 1][j] + grid[i][j]))
+					{
+						sum_map[i][j] = sum_map[i - 1][j] + grid[i][j];
+					}
+					if (j > 0 && (sum_map[i][j] == 0 || sum_map[i][j] > sum_map[i][j - 1] + grid[i][j]))
+					{
+						sum_map[i][j] = sum_map[i][j - 1] + grid[i][j];
+					}
+				}
+			}
+			result = sum_map.back().back();
+		}
+
+		return result;
+	}
+};
