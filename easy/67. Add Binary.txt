@@ -1,0 +1,55 @@
+/*
+Given two binary strings, return their sum (also a binary string).
+
+For example,
+a = "11"
+b = "1"
+Return "100".
+Note:
+simple practice.
+*/
+
+class Solution {
+public:
+    string addBinary(string a, string b) {
+        int carry = 0;
+		string result;
+		if (!a.empty() && !b.empty())
+		{
+			int index_a = a.size()-1;
+			int index_b = b.size()-1;
+			while (index_a>=0 || index_b >= 0)
+			{
+				int single_sum = carry;
+				if (index_a >= 0)
+				{
+					single_sum += ctoi(a[index_a]);
+				}
+				if (index_b >= 0)
+				{
+					single_sum += ctoi(b[index_b]);
+				}
+				index_a--;
+				index_b--;
+				carry = single_sum / 2;
+				single_sum = single_sum % 2;
+				char char_single_sum = itoc(single_sum);
+				result = char_single_sum + result;
+			}
+			if (carry > 0)
+			{
+				char char_carry = itoc(carry);
+				result = char_carry + result;
+			}
+		}
+		return result;
+    }
+	int ctoi(const char c)
+	{
+		return c-'0';
+	}
+	char itoc(const int i)
+	{
+		return (i%10-0)+'0';
+	}
+};
