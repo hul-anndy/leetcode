@@ -1,0 +1,71 @@
+/*
+Given two words word1 and word2, find the minimum number of steps required to convert word1 to word2. (each operation is counted as 1 step.)
+
+You have the following 3 operations permitted on a word:
+
+a) Insert a character
+b) Delete a character
+c) Replace a character
+
+[sea]
+[eat]
+
+Note:
+A DP algorithm, 
+merge a, b and c to one step:
+first, if s1[i] != s2[j] it will create three state: (distance[i-1][j] +1), (distance[i][j-1]+1) and (distance[i-1][j-1]+1)
+(because the distance always rely on before)
+second, if s1[i] == s2[j] it will create a new state: distance[i-1][j-1]
+
+tip:
+create a map[n+1][m+1] will more easy for initialization and calculation of DP.
+*/
+class Solution {    
+public:
+    int minDistance(string word1, string word2) {
+		int result = 0;
+		if (!word1.empty() && !word2.empty())
+		{
+			std::vector<int> single_line(word1.size()+1,0);
+			std::vector<std::vector<int>> min_map(word2.size()+1,single_line);
+			for (int i = 1; i < min_map[0].size(); ++i)
+			{
+				min_map[0][i] = i;
+			}
+			for (int j = 1; j < min_map.size(); ++j)
+			{
+				min_map[j][0] = j;
+			}
+			for (int i = 1; i < min_map[0].size(); ++i)
+			{
+			int word1_index = i-1;
+			for (int j = 1; j < min_map.size(); ++j)
+			{
+				int word2_index = j-1;
+				min_map[j][i] = myMin((word1[word1_index]==word2[word2_index]?0:1) + min_map[j-1][i-1]
+				,min_map[j-1][i]+1
+				,min_map[j][i-1]+1);
+			}
+			}
+			result = min_map.back().back();
+		}
+		else if (!word1.empty() && word2.empty())
+		{
+			result = word1.size();
+		}
+		else if (word1.empty() && !word2.empty())
+		{
+			result = word2.size();
+		}
+		return result;
+	}
+private:
+    int myMin(int a, int b, int c)  
+    {  
+        if (b < a)  
+            a = b;  
+        if (c < a)  
+            a = c;  
+        return a;  
+    }
+};
